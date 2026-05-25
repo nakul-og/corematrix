@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoreMatrix — Forge Your Legacy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #050505;
+  --void: #0A0A0A;
+  --charcoal: #111111;
+  --iron: #1A1A1A;
+  --steel: #222222;
+  --smoke: #333333;
+  --ash: #555555;
+  --silver: #999999;
+  --white: #F5F0E8;
+  --gold: #C8A84B;
+  --gold-light: #E8C86A;
+  --gold-dim: #7A6530;
+  --red: #FF3A1A;
+  --cyan: #00E5FF;
+  --green: #39FF14;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'Barlow', sans-serif;
+  --font-condensed: 'Barlow Condensed', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── CURSOR ── */
+#cursor {
+  width: 10px; height: 10px;
+  background: var(--gold);
+  border-radius: 50%;
+  position: fixed; pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: width 0.2s, height 0.2s, opacity 0.2s;
+  mix-blend-mode: difference;
+}
+#cursor-ring {
+  width: 36px; height: 36px;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  position: fixed; pointer-events: none; z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: all 0.12s ease;
+  opacity: 0.5;
+}
+body:hover #cursor { opacity: 1; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; width: 100%; z-index: 1000;
+  padding: 24px 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: all 0.4s;
+}
+nav.scrolled {
+  background: rgba(5,5,5,0.95);
+  backdrop-filter: blur(20px);
+  padding: 16px 60px;
+  border-bottom: 1px solid rgba(200,168,75,0.15);
+}
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  letter-spacing: 4px;
+  color: var(--white);
+  text-decoration: none;
+}
+.nav-logo span { color: var(--gold); }
+.nav-links { display: flex; gap: 40px; list-style: none; }
+.nav-links a {
+  color: var(--silver);
+  text-decoration: none;
+  font-family: var(--font-condensed);
+  font-size: 0.85rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+.nav-links a:hover { color: var(--gold); }
+.nav-cta {
+  background: var(--gold);
+  color: var(--black);
+  padding: 10px 28px;
+  font-family: var(--font-condensed);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-decoration: none;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  transition: all 0.3s;
+}
+.nav-cta:hover { background: var(--gold-light); transform: scale(1.05); }
+
+/* ── HERO ── */
+#hero {
+  height: 100vh; width: 100%;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(200,168,75,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 80% 20%, rgba(255,58,26,0.04) 0%, transparent 60%),
+    linear-gradient(180deg, #050505 0%, #0A0A0A 50%, #050505 100%);
+}
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(200,168,75,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200,168,75,0.04) 1px, transparent 1px);
+  background-size: 80px 80px;
+  animation: gridPan 20s linear infinite;
+}
+@keyframes gridPan { from { background-position: 0 0; } to { background-position: 80px 80px; } }
+
+.hero-content {
+  position: relative; z-index: 2;
+  text-align: center;
+  max-width: 1100px;
+  padding: 0 40px;
+}
+.hero-eyebrow {
+  font-family: var(--font-condensed);
+  font-size: 0.75rem;
+  letter-spacing: 8px;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.3s forwards;
+}
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 14vw, 14rem);
+  line-height: 0.88;
+  color: var(--white);
+  letter-spacing: 4px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.5s forwards;
+}
+.hero-title .accent { color: var(--gold); display: block; }
+.hero-subtitle {
+  font-family: var(--font-condensed);
+  font-size: clamp(1rem, 2vw, 1.4rem);
+  letter-spacing: 4px;
+  color: var(--silver);
+  font-weight: 300;
+  margin-top: 24px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.7s forwards;
+}
+.hero-actions {
+  display: flex; gap: 20px; justify-content: center; align-items: center;
+  margin-top: 52px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.9s forwards;
+}
+.btn-primary {
+  background: var(--gold);
+  color: var(--black);
+  padding: 18px 48px;
+  font-family: var(--font-condensed);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  border: none; cursor: pointer;
+  clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+  transition: all 0.3s;
+  text-decoration: none;
+  display: inline-block;
+}
+.btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 20px 60px rgba(200,168,75,0.3); }
+.btn-ghost {
+  background: transparent;
+  color: var(--white);
+  padding: 17px 48px;
+  font-family: var(--font-condensed);
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  border: 1px solid rgba(245,240,232,0.3);
+  cursor: pointer;
+  clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+  transition: all 0.3s;
+  text-decoration: none;
+  display: inline-block;
+}
+.btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+.hero-stats {
+  position: absolute; bottom: 60px; left: 0; right: 0;
+  display: flex; justify-content: center; gap: 80px;
+  opacity: 0;
+  animation: fadeUp 0.8s 1.1s forwards;
+}
+.hero-stat { text-align: center; }
+.hero-stat-num {
+  font-family: var(--font-display);
+  font-size: 2.8rem;
+  color: var(--gold);
+  line-height: 1;
+}
+.hero-stat-label {
+  font-family: var(--font-condensed);
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  color: var(--ash);
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+/* Floating particles */
+.particle {
+  position: absolute;
+  width: 2px; height: 2px;
+  background: var(--gold);
+  border-radius: 50%;
+  animation: float linear infinite;
+  opacity: 0;
+}
+@keyframes float {
+  0% { transform: translateY(100vh) scale(0); opacity: 0; }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.3; }
+  100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
+}
+
+/* ── SECTION BASE ── */
+section { padding: 120px 60px; position: relative; }
+.section-label {
+  font-family: var(--font-condensed);
+  font-size: 0.7rem;
+  letter-spacing: 6px;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 16px;
+}
+.section-label::before {
+  content: '';
+  width: 40px; height: 1px;
+  background: var(--gold);
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 7vw, 6rem);
+  line-height: 0.92;
+  letter-spacing: 2px;
+}
+
+/* ── MARQUEE ── */
+.marquee-strip {
+  background: var(--gold);
+  padding: 18px 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.marquee-track {
+  display: inline-flex;
+  animation: marquee 20s linear infinite;
+}
+.marquee-item {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  letter-spacing: 4px;
+  color: var(--black);
+  padding: 0 40px;
+}
+.marquee-dot {
+  color: var(--black);
+  opacity: 0.4;
+  font-size: 0.5rem;
+  vertical-align: middle;
+}
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* ── STATS SECTION ── */
+#stats {
+  background: var(--charcoal);
+  padding: 80px 60px;
+  border-top: 1px solid var(--iron);
+  border-bottom: 1px solid var(--iron);
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0;
+  max-width: 1400px; margin: 0 auto;
+}
+.stat-item {
+  padding: 40px 30px;
+  text-align: center;
+  border-right: 1px solid var(--iron);
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s;
+}
+.stat-item.visible { opacity: 1; transform: translateY(0); }
+.stat-item:last-child { border-right: none; }
+.stat-number {
+  font-family: var(--font-display);
+  font-size: 3.5rem;
+  color: var(--gold);
+  line-height: 1;
+  display: block;
+}
+.stat-label {
+  font-family: var(--font-condensed);
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  color: var(--ash);
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+
+/* ── WORKOUTS ── */
+#workouts { background: var(--void); }
+.workouts-header {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-bottom: 64px;
+  max-width: 1400px; margin-left: auto; margin-right: auto;
+}
+.workouts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+  max-width: 1400px; margin: 0 auto;
+}
+.workout-card {
+  position: relative;
+  background: var(--charcoal);
+  padding: 52px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.5s;
+  opacity: 0;
+  transform: translateY(40px);
+}
+.workout-card.visible { opacity: 1; transform: translateY(0); }
+.workout-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--card-color, var(--gold));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s;
+}
+.workout-card:hover::before { transform: scaleX(1); }
+.workout-card:hover { background: var(--iron); transform: translateY(-4px); }
+.workout-card-bg {
+  position: absolute; right: -20px; bottom: -20px;
+  font-family: var(--font-display);
+  font-size: 12rem;
+  color: rgba(255,255,255,0.02);
+  line-height: 1;
+  pointer-events: none;
+  transition: transform 0.5s;
+}
+.workout-card:hover .workout-card-bg { transform: scale(1.1) rotate(-5deg); }
+.workout-badge {
+  display: inline-block;
+  font-family: var(--font-condensed);
+  font-size: 0.65rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border: 1px solid;
+  margin-bottom: 28px;
+}
+.workout-name {
+  font-family: var(--font-display);
+  font-size: 3.5rem;
+  line-height: 1;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+}
+.workout-meta {
+  display: flex; gap: 24px;
+  margin-bottom: 20px;
+}
+.workout-meta-item {
+  font-family: var(--font-condensed);
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  color: var(--ash);
+  text-transform: uppercase;
+}
+.workout-desc {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--silver);
+  margin-bottom: 28px;
+  font-weight: 300;
+}
+.workout-exercises {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-bottom: 32px;
+}
+.exercise-tag {
+  font-family: var(--font-condensed);
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  color: var(--silver);
+  background: var(--steel);
+  padding: 4px 12px;
+  text-transform: uppercase;
+}
+.workout-cta {
+  display: flex; align-items: center; gap: 12px;
+  font-family: var(--font-condensed);
+  font-size: 0.75rem;
+  letter-spacing: 3px;
+  color: var(--gold);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: gap 0.3s;
+}
+.workout-card:hover .workout-cta { gap: 20px; }
+.workout-arrow { font-size: 1.2rem; }
+
+/* ── TRAINERS ── */
+#trainers {
+  background: var(--charcoal);
+  overflow: hidden;
+}
+.trainers-header {
+  max-width: 1400px; margin: 0 auto 64px;
+}
+.trainers-scroll {
+  display: flex; gap: 2px;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 0 60px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.trainers-scroll::-webkit-scrollbar { display: none; }
+.trainer-card {
+  flex: 0 0 380px;
+  background: var(--iron);
+  padding: 52px 44px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s;
+  opacity: 0;
+  transform: translateX(40px);
+}
+.trainer-card.visible { opacity: 1; transform: translateX(0); }
+.trainer-card:hover { background: var(--steel); transform: translateY(-8px); }
+.trainer-emoji {
+  font-size: 3rem;
+  margin-bottom: 28px;
+  display: block;
+}
+.trainer-name {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  letter-spacing: 2px;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.trainer-title {
+  font-family: var(--font-condensed);
+  font-size: 0.72rem;
+  letter-spacing: 3px;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.trainer-bio {
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--silver);
+  font-weight: 300;
+  margin-bottom: 28px;
+}
+.trainer-specialties {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-bottom: 28px;
+}
+.specialty-tag {
+  font-family: var(--font-condensed);
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  color: var(--white);
+  border: 1px solid var(--smoke);
+  padding: 4px 12px;
+  text-transform: uppercase;
+}
+.trainer-stats {
+  display: flex; gap: 32px;
+  padding-top: 28px;
+  border-top: 1px solid var(--steel);
+}
+.trainer-stat-val {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: var(--gold);
+}
+.trainer-stat-lbl {
+  font-family: var(--font-condensed);
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  color: var(--ash);
+  text-transform: uppercase;
+}
+
+/* ── TRANSFORMATIONS ── */
+#transformations { background: var(--void); }
+.transform-header {
+  text-align: center;
+  max-width: 1400px; margin: 0 auto 80px;
+}
+.transform-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  max-width: 1400px; margin: 0 auto;
+}
+.transform-card {
+  background: var(--charcoal);
+  position: relative; overflow: hidden;
+  opacity: 0; transform: translateY(30px);
+  transition: all 0.6s;
+}
+.transform-card.visible { opacity: 1; transform: translateY(0); }
+.transform-visual {
+  height: 400px;
+  position: relative;
+  display: flex;
+  overflow: hidden;
+}
+.transform-half {
+  flex: 1;
+  display: flex; align-items: flex-end; justify-content: center;
+  padding-bottom: 32px;
+  position: relative;
+}
+.transform-half.before {
+  background: linear-gradient(180deg,
+    var(--steel) 0%,
+    var(--iron) 40%,
+    var(--charcoal) 100%);
+}
+.transform-half.after {
+  background: linear-gradient(180deg,
+    rgba(200,168,75,0.12) 0%,
+    rgba(200,168,75,0.06) 40%,
+    var(--charcoal) 100%);
+}
+.transform-figure {
+  font-size: 5rem;
+  line-height: 1;
+}
+.transform-label {
+  position: absolute; top: 16px;
+  font-family: var(--font-condensed);
+  font-size: 0.65rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+}
+.before .transform-label {
+  left: 12px;
+  color: var(--ash);
+  border: 1px solid var(--smoke);
+}
+.after .transform-label {
+  right: 12px;
+  color: var(--gold);
+  border: 1px solid var(--gold);
+}
+.transform-divider {
+  position: absolute; top: 0; left: 50%;
+  width: 1px; height: 100%;
+  background: var(--gold);
+  transform: translateX(-50%);
+}
+.transform-info {
+  padding: 36px 40px;
+}
+.transform-name {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+.transform-stats {
+  display: flex; gap: 20px;
+  margin-bottom: 20px;
+}
+.transform-stat {
+  font-family: var(--font-condensed);
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+.transform-quote {
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--silver);
+  font-style: italic;
+  font-weight: 300;
+}
+.transform-plan {
+  font-family: var(--font-condensed);
+  font-size: 0.65rem;
+  letter-spacing: 3px;
+  color: var(--ash);
+  text-transform: uppercase;
+  margin-top: 16px;
+}
+
+/* ── CONTENT FEED ── */
+#content { background: var(--charcoal); }
+.content-header {
+  max-width: 1400px; margin: 0 auto 64px;
+  display: flex; align-items: flex-end; justify-content: space-between;
+}
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  max-width: 1400px; margin: 0 auto;
+}
+.content-card {
+  background: var(--iron);
+  padding: 44px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.4s;
+  opacity: 0; transform: translateY(30px);
+}
+.content-card.visible { opacity: 1; transform: translateY(0); }
+.content-card:hover { background: var(--steel); transform: translateY(-6px); }
+.content-icon {
+  font-size: 2.4rem;
+  margin-bottom: 20px;
+  display: block;
+}
+.content-category {
+  font-family: var(--font-condensed);
+  font-size: 0.65rem;
+  letter-spacing: 4px;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.content-title {
+  font-family: var(--font-condensed);
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+.content-text {
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--silver);
+  font-weight: 300;
+}
+.content-likes {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 24px;
+  font-family: var(--font-condensed);
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  color: var(--ash);
+}
+.like-btn {
+  background: none; border: none;
+  font-size: 1rem; cursor: pointer;
+  transition: transform 0.2s;
+}
+.like-btn:hover { transform: scale(1.3); }
+
+/* ── CTA SECTION ── */
+#cta {
+  background: var(--gold);
+  padding: 120px 60px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+#cta::before {
+  content: 'CORE';
+  position: absolute;
+  font-family: var(--font-display);
+  font-size: 40vw;
+  color: rgba(0,0,0,0.06);
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  pointer-events: none;
+  line-height: 1;
+}
+.cta-content { position: relative; z-index: 1; }
+.cta-title {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 8rem);
+  color: var(--black);
+  line-height: 0.9;
+  letter-spacing: 2px;
+  margin-bottom: 32px;
+}
+.cta-subtitle {
+  font-family: var(--font-condensed);
+  font-size: 1rem;
+  letter-spacing: 4px;
+  color: rgba(0,0,0,0.6);
+  text-transform: uppercase;
+  margin-bottom: 52px;
+}
+.cta-form {
+  display: flex; gap: 0;
+  max-width: 560px; margin: 0 auto;
+}
+.cta-input {
+  flex: 1;
+  background: rgba(0,0,0,0.15);
+  border: 2px solid rgba(0,0,0,0.3);
+  border-right: none;
+  color: var(--black);
+  padding: 18px 24px;
+  font-family: var(--font-condensed);
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+.cta-input::placeholder { color: rgba(0,0,0,0.4); }
+.cta-input:focus { border-color: var(--black); }
+.cta-submit {
+  background: var(--black);
+  color: var(--gold);
+  border: 2px solid var(--black);
+  padding: 18px 36px;
+  font-family: var(--font-condensed);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.cta-submit:hover { background: var(--charcoal); }
+.cta-message {
+  margin-top: 20px;
+  font-family: var(--font-condensed);
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  color: rgba(0,0,0,0.7);
+  min-height: 24px;
+}
+
+/* ── FOOTER ── */
+footer {
+  background: var(--black);
+  padding: 80px 60px 40px;
+  border-top: 1px solid var(--iron);
+}
+.footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 60px;
+  margin-bottom: 60px;
+}
+.footer-logo {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  letter-spacing: 4px;
+  margin-bottom: 20px;
+}
+.footer-logo span { color: var(--gold); }
+.footer-tagline {
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--ash);
+  font-weight: 300;
+  max-width: 280px;
+}
+.footer-heading {
+  font-family: var(--font-condensed);
+  font-size: 0.7rem;
+  letter-spacing: 4px;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.footer-links { list-style: none; }
+.footer-links li {
+  margin-bottom: 12px;
+}
+.footer-links a {
+  color: var(--ash);
+  text-decoration: none;
+  font-size: 0.88rem;
+  transition: color 0.3s;
+}
+.footer-links a:hover { color: var(--white); }
+.footer-bottom {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 40px;
+  border-top: 1px solid var(--iron);
+}
+.footer-copy {
+  font-family: var(--font-condensed);
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  color: var(--ash);
+}
+.footer-socials { display: flex; gap: 20px; }
+.social-link {
+  width: 36px; height: 36px;
+  border: 1px solid var(--smoke);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ash);
+  text-decoration: none;
+  font-size: 0.8rem;
+  transition: all 0.3s;
+}
+.social-link:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── LOADING SCREEN ── */
+#loader {
+  position: fixed; inset: 0;
+  background: var(--black);
+  z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  transition: opacity 0.8s, visibility 0.8s;
+}
+#loader.hidden { opacity: 0; visibility: hidden; }
+.loader-logo {
+  font-family: var(--font-display);
+  font-size: 4rem;
+  letter-spacing: 8px;
+  color: var(--white);
+  overflow: hidden;
+}
+.loader-logo span { color: var(--gold); }
+.loader-bar-wrap {
+  width: 200px; height: 1px;
+  background: var(--smoke);
+  margin-top: 32px; overflow: hidden;
+}
+.loader-bar {
+  height: 100%; width: 0;
+  background: var(--gold);
+  animation: loadBar 1.8s ease forwards;
+}
+@keyframes loadBar { to { width: 100%; } }
+.loader-pct {
+  font-family: var(--font-condensed);
+  font-size: 0.7rem;
+  letter-spacing: 4px;
+  color: var(--ash);
+  margin-top: 16px;
+}
+
+/* ── SCROLL LINE ── */
+.scroll-indicator {
+  position: absolute; bottom: 30px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  opacity: 0;
+  animation: fadeUp 0.8s 1.4s forwards;
+}
+.scroll-text {
+  font-family: var(--font-condensed);
+  font-size: 0.6rem;
+  letter-spacing: 4px;
+  color: var(--ash);
+  text-transform: uppercase;
+}
+.scroll-line {
+  width: 1px; height: 60px;
+  background: linear-gradient(var(--gold), transparent);
+  animation: scrollPulse 1.5s ease infinite;
+}
+@keyframes scrollPulse {
+  0%, 100% { transform: scaleY(1); opacity: 0.5; }
+  50% { transform: scaleY(0.5); opacity: 1; }
+}
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.9);
+  backdrop-filter: blur(10px);
+  z-index: 5000;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; visibility: hidden;
+  transition: all 0.3s;
+}
+.modal-overlay.active { opacity: 1; visibility: visible; }
+.modal-box {
+  background: var(--charcoal);
+  border: 1px solid var(--smoke);
+  max-width: 600px; width: 90%;
+  padding: 60px;
+  position: relative;
+  transform: translateY(30px);
+  transition: transform 0.3s;
+}
+.modal-overlay.active .modal-box { transform: translateY(0); }
+.modal-close {
+  position: absolute; top: 24px; right: 24px;
+  background: none; border: none;
+  color: var(--ash); font-size: 1.5rem;
+  cursor: pointer; transition: color 0.3s;
+}
+.modal-close:hover { color: var(--white); }
+
+/* Responsive */
+@media (max-width: 1024px) {
+  nav { padding: 20px 30px; }
+  nav.scrolled { padding: 14px 30px; }
+  section { padding: 80px 30px; }
+  .stats-grid { grid-template-columns: repeat(3, 1fr); }
+  .workouts-grid { grid-template-columns: 1fr; }
+  .transform-grid { grid-template-columns: 1fr; }
+  .content-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-top { grid-template-columns: 1fr 1fr; }
+  .hero-stats { gap: 40px; }
+  .nav-links { display: none; }
+}
+@media (max-width: 600px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .content-grid { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr; }
+  .hero-stats { gap: 24px; flex-wrap: wrap; }
+  .hero-actions { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- Loader -->
+<div id="loader">
+  <div class="loader-logo">CORE<span>MATRIX</span></div>
+  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+  <div class="loader-pct" id="loaderPct">0%</div>
+</div>
+
+<!-- Cursor -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">CORE<span>MATRIX</span></a>
+  <ul class="nav-links">
+    <li><a href="#workouts">Programs</a></li>
+    <li><a href="#trainers">Coaches</a></li>
+    <li><a href="#transformations">Results</a></li>
+    <li><a href="#content">Feed</a></li>
+  </ul>
+  <a href="#cta" class="nav-cta">Start Now</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <!-- Particles -->
+  <div id="particles"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Elite Fitness · Precision Training · Proven Results</div>
+    <h1 class="hero-title">
+      FORGE
+      <span class="accent">YOUR</span>
+      LEGACY
+    </h1>
+    <p class="hero-subtitle">Where Science Meets Obsession &nbsp;·&nbsp; Where Bodies Become Legends</p>
+    <div class="hero-actions">
+      <a href="#workouts" class="btn-primary">Explore Programs</a>
+      <a href="#transformations" class="btn-ghost">See Results</a>
+    </div>
+  </div>
+
+  <div class="hero-stats" id="heroStats">
+    <div class="hero-stat">
+      <div class="hero-stat-num" data-target="12847">0</div>
+      <div class="hero-stat-label">Elite Members</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num" data-target="4200">0</div>
+      <div class="hero-stat-label">Transformations</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num" data-target="24">0</div>
+      <div class="hero-stat-label">Expert Coaches</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num" data-target="38">0</div>
+      <div class="hero-stat-label">Countries</div>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <span class="scroll-text">Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-strip">
+  <div class="marquee-track" id="marqueeTrack"></div>
+</div>
+
+<!-- STATS -->
+<section id="stats">
+  <div class="stats-grid" id="statsGrid">
+    <!-- Populated by JS -->
+  </div>
+</section>
+
+<!-- WORKOUTS -->
+<section id="workouts">
+  <div class="workouts-header">
+    <div>
+      <div class="section-label">Training Systems</div>
+      <h2 class="section-title">ELITE<br>PROGRAMS</h2>
+    </div>
+    <p style="max-width:340px;color:var(--silver);font-size:0.9rem;line-height:1.8;font-weight:300;">
+      Science-backed protocols engineered for one outcome: your absolute best physique and performance.
+    </p>
+  </div>
+  <div class="workouts-grid" id="workoutsGrid">
+    <!-- Populated by API -->
+  </div>
+</section>
+
+<!-- TRAINERS -->
+<section id="trainers">
+  <div class="trainers-header">
+    <div class="section-label">The Coaches</div>
+    <h2 class="section-title">WORLD-CLASS<br>EXPERTS</h2>
+  </div>
+  <div class="trainers-scroll" id="trainersScroll">
+    <!-- Populated by API -->
+  </div>
+</section>
+
+<!-- TRANSFORMATIONS -->
+<section id="transformations">
+  <div class="transform-header">
+    <div class="section-label" style="justify-content:center;">Real People · Real Results</div>
+    <h2 class="section-title">PROOF IN<br>EVERY BODY</h2>
+    <p style="color:var(--silver);font-size:0.9rem;line-height:1.8;font-weight:300;margin-top:20px;max-width:500px;margin-left:auto;margin-right:auto;">
+      These aren't photoshop. These are the outcomes of discipline, coaching, and the CoreMatrix method.
+    </p>
+  </div>
+  <div class="transform-grid" id="transformGrid">
+    <!-- Populated by API -->
+  </div>
+</section>
+
+<!-- CONTENT FEED -->
+<section id="content">
+  <div class="content-header">
+    <div>
+      <div class="section-label">Fitness Intelligence</div>
+      <h2 class="section-title">THE FEED</h2>
+    </div>
+    <p style="max-width:300px;color:var(--silver);font-size:0.88rem;line-height:1.8;font-weight:300;">
+      Science-backed tips, nutrition truth and mindset tools to accelerate your gains.
+    </p>
+  </div>
+  <div class="content-grid" id="contentGrid">
+    <!-- Populated by API -->
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-content">
+    <div class="section-label" style="justify-content:center;color:rgba(0,0,0,0.5);">
+      <span style="background:rgba(0,0,0,0.2);width:40px;height:1px;display:inline-block;"></span>
+      Join The Elite
+    </div>
+    <h2 class="cta-title">START YOUR<br>TRANSFORMATION</h2>
+    <p class="cta-subtitle">Free 7-day trial · Cancel anytime · No excuses</p>
+    <div class="cta-form">
+      <input class="cta-input" type="email" id="ctaEmail" placeholder="Your email address" />
+      <button class="cta-submit" onclick="handleSubscribe()">JOIN NOW</button>
+    </div>
+    <div class="cta-message" id="ctaMessage"></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-logo">CORE<span>MATRIX</span></div>
+      <p class="footer-tagline">
+        The world's most elite fitness ecosystem. Built for athletes who refuse to settle for ordinary.
+      </p>
+    </div>
+    <div>
+      <div class="footer-heading">Programs</div>
+      <ul class="footer-links">
+        <li><a href="#workouts">Alpha Shred</a></li>
+        <li><a href="#workouts">Titan Build</a></li>
+        <li><a href="#workouts">Apex Athlete</a></li>
+        <li><a href="#workouts">Foundation Reset</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-heading">Company</div>
+      <ul class="footer-links">
+        <li><a href="#">About Us</a></li>
+        <li><a href="#trainers">Our Coaches</a></li>
+        <li><a href="#transformations">Success Stories</a></li>
+        <li><a href="#">Careers</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-heading">Support</div>
+      <ul class="footer-links">
+        <li><a href="#">Help Center</a></li>
+        <li><a href="#">Community</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Use</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2025 COREMATRIX. ALL RIGHTS RESERVED.</div>
+    <div class="footer-socials">
+      <a href="#" class="social-link">IG</a>
+      <a href="#" class="social-link">TW</a>
+      <a href="#" class="social-link">YT</a>
+      <a href="#" class="social-link">TK</a>
+    </div>
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="workoutModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+const API = 'http://127.0.0.1:5000/api';
+
+// ── LOADER ──────────────────────────────────────────────────────────────────
+(function() {
+  let pct = 0;
+  const el = document.getElementById('loaderPct');
+  const iv = setInterval(() => {
+    pct = Math.min(100, pct + Math.floor(Math.random() * 15) + 3);
+    el.textContent = pct + '%';
+    if (pct >= 100) {
+      clearInterval(iv);
+      setTimeout(() => {
+        document.getElementById('loader').classList.add('hidden');
+        initAll();
+      }, 400);
+    }
+  }, 80);
+})();
+
+function initAll() {
+  initCursor();
+  initParticles();
+  initMarquee();
+  initScroll();
+  loadAll();
+}
+
+// ── CURSOR ──────────────────────────────────────────────────────────────────
+function initCursor() {
+  const cur = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => {
+    cur.style.left = e.clientX + 'px';
+    cur.style.top = e.clientY + 'px';
+    rx += (e.clientX - rx) * 0.15;
+    ry += (e.clientY - ry) * 0.15;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(() => {
+      rx += (e.clientX - rx) * 0.15;
+      ry += (e.clientY - ry) * 0.15;
+      ring.style.left = rx + 'px';
+      ring.style.top = ry + 'px';
+    });
+  });
+}
+
+// ── PARTICLES ───────────────────────────────────────────────────────────────
+function initParticles() {
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `
+      left: ${Math.random() * 100}%;
+      animation-duration: ${6 + Math.random() * 10}s;
+      animation-delay: ${Math.random() * 8}s;
+      width: ${1 + Math.random() * 2}px;
+      height: ${1 + Math.random() * 2}px;
+      opacity: ${0.2 + Math.random() * 0.5};
+    `;
+    container.appendChild(p);
+  }
+}
+
+// ── MARQUEE ─────────────────────────────────────────────────────────────────
+function initMarquee() {
+  const items = ['ELITE TRAINING','PRECISION NUTRITION','PROVEN RESULTS','WORLD-CLASS COACHES','12,000+ MEMBERS','FORGE YOUR LEGACY'];
+  const track = document.getElementById('marqueeTrack');
+  let html = '';
+  for (let i = 0; i < 4; i++) {
+    items.forEach(item => {
+      html += `<span class="marquee-item">${item}</span><span class="marquee-dot">●</span>`;
+    });
+  }
+  track.innerHTML = html;
+}
+
+// ── SCROLL OBSERVER ──────────────────────────────────────────────────────────
+function initScroll() {
+  window.addEventListener('scroll', () => {
+    const nb = document.getElementById('navbar');
+    nb.classList.toggle('scrolled', window.scrollY > 80);
+  });
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.stat-item, .workout-card, .trainer-card, .transform-card, .content-card').forEach(el => obs.observe(el));
+}
+
+// ── COUNTER ANIMATION ────────────────────────────────────────────────────────
+function animateCounter(el, target, duration = 1800) {
+  let start = null;
+  const step = ts => {
+    if (!start) start = ts;
+    const progress = Math.min((ts - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.floor(eased * target).toLocaleString();
+    if (progress < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+// ── API CALLS ────────────────────────────────────────────────────────────────
+async function loadAll() {
+  try {
+    const [stats, workouts, trainers, transforms, content] = await Promise.all([
+      fetch(`${API}/stats`).then(r => r.json()).catch(() => ({ data: null })),
+      fetch(`${API}/workouts`).then(r => r.json()).catch(() => ({ data: [] })),
+      fetch(`${API}/trainers`).then(r => r.json()).catch(() => ({ data: [] })),
+      fetch(`${API}/transformations`).then(r => r.json()).catch(() => ({ data: [] })),
+      fetch(`${API}/content`).then(r => r.json()).catch(() => ({ data: [] })),
+    ]);
+
+    if (stats.data) renderStats(stats.data);
+    if (workouts.data) renderWorkouts(workouts.data);
+    if (trainers.data) renderTrainers(trainers.data);
+    if (transforms.data) renderTransformations(transforms.data);
+    if (content.data) renderContent(content.data);
+
+    // Animate hero counters
+    document.querySelectorAll('.hero-stat-num[data-target]').forEach(el => {
+      animateCounter(el, parseInt(el.dataset.target));
+    });
+
+    // Re-init observers for new elements
+    setTimeout(initScroll, 100);
+  } catch(e) {
+    console.log('API not available — rendering with fallback data');
+    renderFallback();
+  }
+}
+
+// ── RENDER FUNCTIONS ─────────────────────────────────────────────────────────
+function renderStats(data) {
+  const grid = document.getElementById('statsGrid');
+  const items = [
+    { num: data.members?.toLocaleString() + '+', label: 'Elite Members' },
+    { num: data.transformations?.toLocaleString() + '+', label: 'Transformations' },
+    { num: data.trainers, label: 'Expert Coaches' },
+    { num: data.countries, label: 'Countries' },
+    { num: data.avg_rating, label: 'Avg Rating' },
+    { num: data.programs, label: 'Programs' },
+  ];
+  grid.innerHTML = items.map(item => `
+    <div class="stat-item">
+      <span class="stat-number">${item.num}</span>
+      <div class="stat-label">${item.label}</div>
+    </div>
+  `).join('');
+}
+
+const LEVEL_COLORS = { Advanced: '#FF4D00', Intermediate: '#C0A060', Elite: '#00C9FF', Beginner: '#39FF14' };
+
+function renderWorkouts(plans) {
+  const grid = document.getElementById('workoutsGrid');
+  const emojis = { 'Fat Loss': '🔥', 'Muscle Gain': '💪', 'Performance': '⚡', 'Fundamentals': '🎯' };
+  grid.innerHTML = plans.map(p => `
+    <div class="workout-card" style="--card-color:${p.color}" onclick="showWorkoutModal(${p.id})">
+      <div class="workout-card-bg">${emojis[p.category] || '⚡'}</div>
+      <div class="workout-badge" style="color:${p.color};border-color:${p.color};">${p.level}</div>
+      <h3 class="workout-name">${p.name.toUpperCase()}</h3>
+      <div class="workout-meta">
+        <span class="workout-meta-item">📅 ${p.duration}</span>
+        <span class="workout-meta-item">⚡ ${p.sessions_per_week}x/Week</span>
+        <span class="workout-meta-item">🎯 ${p.category}</span>
+      </div>
+      <p class="workout-desc">${p.description}</p>
+      <div class="workout-exercises">
+        ${p.exercises.map(e => `<span class="exercise-tag">${e}</span>`).join('')}
+      </div>
+      <div class="workout-cta">
+        <span>View Program</span>
+        <span class="workout-arrow">→</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderTrainers(trainers) {
+  const container = document.getElementById('trainersScroll');
+  container.innerHTML = trainers.map(t => `
+    <div class="trainer-card">
+      <span class="trainer-emoji">${t.emoji}</span>
+      <h3 class="trainer-name">${t.name.toUpperCase()}</h3>
+      <div class="trainer-title">${t.title}</div>
+      <p class="trainer-bio">${t.bio}</p>
+      <div class="trainer-specialties">
+        ${t.specialties.map(s => `<span class="specialty-tag">${s}</span>`).join('')}
+      </div>
+      <div class="trainer-stats">
+        <div>
+          <div class="trainer-stat-val">${t.clients_trained}+</div>
+          <div class="trainer-stat-lbl">Clients</div>
+        </div>
+        <div>
+          <div class="trainer-stat-val">${t.rating}</div>
+          <div class="trainer-stat-lbl">Rating</div>
+        </div>
+        <div>
+          <div class="trainer-stat-val">${t.experience}</div>
+          <div class="trainer-stat-lbl">Experience</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+const TRANSFORM_FIGS = ['🧑‍🦱', '👩', '🧔'];
+function renderTransformations(transforms) {
+  const grid = document.getElementById('transformGrid');
+  grid.innerHTML = transforms.map((t, i) => {
+    const result = t.weight_lost ? `Lost ${t.weight_lost}` : t.muscle_gained ? `Gained ${t.muscle_gained}` : t.performance;
+    return `
+    <div class="transform-card">
+      <div class="transform-visual">
+        <div class="transform-half before">
+          <span class="transform-label">BEFORE</span>
+          <span class="transform-figure" style="filter:grayscale(1) opacity(0.5);">${TRANSFORM_FIGS[i]}</span>
+        </div>
+        <div class="transform-divider"></div>
+        <div class="transform-half after">
+          <span class="transform-label">AFTER</span>
+          <span class="transform-figure">${TRANSFORM_FIGS[i]}</span>
+        </div>
+      </div>
+      <div class="transform-info">
+        <h3 class="transform-name">${t.name}</h3>
+        <div class="transform-stats">
+          <span class="transform-stat">${result}</span>
+          <span class="transform-stat" style="color:var(--silver)">${t.body_fat_change} Body Fat</span>
+          <span class="transform-stat" style="color:var(--silver)">${t.duration}</span>
+        </div>
+        <p class="transform-quote">"${t.testimonial}"</p>
+        <div class="transform-plan">Program: ${t.plan} · Coach: ${t.trainer}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderContent(items) {
+  const grid = document.getElementById('contentGrid');
+  grid.innerHTML = items.map(item => `
+    <div class="content-card">
+      <span class="content-icon">${item.icon}</span>
+      <div class="content-category">${item.category}</div>
+      <h3 class="content-title">${item.title}</h3>
+      <p class="content-text">${item.content}</p>
+      <div class="content-likes">
+        <button class="like-btn" onclick="likePost(this, ${item.id})">❤️</button>
+        <span id="likes-${item.id}">${item.likes.toLocaleString()}</span> likes
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── FALLBACK DATA ─────────────────────────────────────────────────────────────
+function renderFallback() {
+  // Render with embedded data if API is down
+  const statsEl = document.getElementById('statsGrid');
+  const items = [
+    {num:'12,847+',label:'Elite Members'},{num:'4,200+',label:'Transformations'},
+    {num:'24',label:'Expert Coaches'},{num:'38',label:'Countries'},
+    {num:'4.9★',label:'Avg Rating'},{num:'16',label:'Programs'},
+  ];
+  statsEl.innerHTML = items.map(i => `
+    <div class="stat-item visible">
+      <span class="stat-number">${i.num}</span>
+      <div class="stat-label">${i.label}</div>
+    </div>`).join('');
+
+  document.querySelectorAll('.hero-stat-num[data-target]').forEach(el => {
+    animateCounter(el, parseInt(el.dataset.target));
+  });
+
+  // Workouts fallback
+  renderWorkouts([
+    {id:1,name:"Alpha Shred",level:"Advanced",duration:"12 Weeks",category:"Fat Loss",sessions_per_week:5,description:"Elite fat-loss protocol combining HIIT, strength supersets and metabolic conditioning.",image:"shred",color:"#FF4D00",exercises:["Barbell Complex","Sprint Intervals","Cable Supersets","Plyo Circuits"]},
+    {id:2,name:"Titan Build",level:"Intermediate",duration:"16 Weeks",category:"Muscle Gain",sessions_per_week:4,description:"Progressive hypertrophy system built on compound lifts and strategic volume manipulation.",image:"build",color:"#C0A060",exercises:["Squat Variations","Deadlift Progressions","Press Patterns","Pull Supinations"]},
+    {id:3,name:"Apex Athlete",level:"Elite",duration:"20 Weeks",category:"Performance",sessions_per_week:6,description:"Sport-science driven athletic development. Power, speed, endurance — all elevated.",image:"athlete",color:"#00C9FF",exercises:["Olympic Lifts","Plyometrics","Agility Drills","Zone 2 Cardio"]},
+    {id:4,name:"Foundation Reset",level:"Beginner",duration:"8 Weeks",category:"Fundamentals",sessions_per_week:3,description:"Master movement patterns and build the base every elite physique is built on.",image:"foundation",color:"#39FF14",exercises:["Bodyweight Mastery","Mobility Work","Basic Compounds","Core Stability"]},
+  ]);
+  renderTrainers([
+    {id:1,name:"Marcus Vane",title:"Head of Strength & Conditioning",specialties:["Powerlifting","Athletic Performance"],experience:"12 Years",bio:"Former pro athlete turned elite coach. Marcus has trained 3 Olympians and 200+ competitive athletes.",clients_trained:847,rating:4.9,emoji:"💪"},
+    {id:2,name:"Zara Soleil",title:"Nutrition & Transformation Specialist",specialties:["Fat Loss","Nutrition Science"],experience:"9 Years",bio:"Biochemist turned fitness coach. Science-first approach that drives sustainable transformations.",clients_trained:612,rating:4.8,emoji:"🔬"},
+    {id:3,name:"Dante Cruz",title:"Movement & Mobility Director",specialties:["Functional Movement","Injury Rehab"],experience:"14 Years",bio:"Physical therapist rebuilding athletes from the ground up with the CoreMatrix Movement System.",clients_trained:1023,rating:5.0,emoji:"🎯"},
+    {id:4,name:"Kai Nakamura",title:"HIIT & Metabolic Conditioning Expert",specialties:["HIIT","Endurance"],experience:"8 Years",bio:"Ultra-marathon finisher and metabolic specialist. Sessions are intense, precise and transformative.",clients_trained:445,rating:4.9,emoji:"⚡"},
+  ]);
+  renderTransformations([
+    {id:1,name:"Jordan M.",duration:"16 Weeks",plan:"Alpha Shred",weight_lost:"38 lbs",body_fat_change:"-11%",testimonial:"CoreMatrix didn't just change my body — it rewired how I think about fitness entirely.",trainer:"Marcus Vane"},
+    {id:2,name:"Sofia R.",duration:"20 Weeks",plan:"Titan Build",muscle_gained:"14 lbs",body_fat_change:"-4%",testimonial:"I've tried every program. Nothing compares to the CoreMatrix methodology. Period.",trainer:"Zara Soleil"},
+    {id:3,name:"Alex T.",duration:"12 Weeks",plan:"Apex Athlete",performance:"+40% strength",body_fat_change:"-7%",testimonial:"My lifts went through the roof. CoreMatrix is the real deal for serious athletes.",trainer:"Dante Cruz"},
+  ]);
+  renderContent([
+    {id:1,type:"tip",title:"Progressive Overload Explained",content:"Add 2.5-5% more load or 1-2 reps every session. This single principle drives 80% of all muscle growth.",category:"Training",icon:"📈",likes:2847},
+    {id:2,type:"nutrition",title:"Protein Timing Myth Busted",content:"Total daily protein (0.8-1g per lb bodyweight) matters far more than the 30-minute anabolic window. Consistency beats timing.",category:"Nutrition",icon:"🥩",likes:1923},
+    {id:3,type:"science",title:"Sleep: The Real Performance Drug",content:"7-9 hours sleep increases testosterone 15%, reduces cortisol 37%, and boosts recovery 2x. No supplement replicates this.",category:"Recovery",icon:"😴",likes:3401},
+    {id:4,type:"mindset",title:"The 40% Rule",content:"When your mind says you're done, you're at 40% capacity. Elite athletes train in this mental gap.",category:"Mindset",icon:"🧠",likes:4122},
+    {id:5,type:"tip",title:"Deload Week Protocol",content:"Every 4-6 weeks, drop volume 40-50%. Counter-intuitive but deloads prevent overtraining and trigger breakthroughs.",category:"Training",icon:"🔄",likes:1567},
+    {id:6,type:"nutrition",title:"Creatine: The GOAT Supplement",content:"5g daily creatine monohydrate. 1000+ studies back it. Increases strength 5-15%, delays fatigue, costs pennies.",category:"Nutrition",icon:"⚗️",likes:5238},
+  ]);
+  setTimeout(initScroll, 100);
+}
+
+// ── INTERACTIONS ──────────────────────────────────────────────────────────────
+function likePost(btn, id) {
+  const el = document.getElementById('likes-' + id);
+  const current = parseInt(el.textContent.replace(',',''));
+  el.textContent = (current + 1).toLocaleString();
+  btn.style.transform = 'scale(1.5)';
+  setTimeout(() => btn.style.transform = 'scale(1)', 200);
+}
+
+async function showWorkoutModal(id) {
+  let plan;
+  try {
+    const res = await fetch(`${API}/workouts/${id}`);
+    const data = await res.json();
+    plan = data.data;
+  } catch(e) { return; }
+
+  document.getElementById('modalContent').innerHTML = `
+    <div style="font-family:var(--font-condensed);font-size:0.65rem;letter-spacing:4px;color:var(--gold);text-transform:uppercase;margin-bottom:16px;">${plan.level} · ${plan.category}</div>
+    <h2 style="font-family:var(--font-display);font-size:3.5rem;letter-spacing:2px;margin-bottom:16px;">${plan.name.toUpperCase()}</h2>
+    <p style="color:var(--silver);font-size:0.9rem;line-height:1.8;margin-bottom:24px;">${plan.description}</p>
+    <div style="background:var(--iron);padding:24px;margin-bottom:24px;">
+      <div style="font-family:var(--font-condensed);font-size:0.65rem;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:12px;">Primary Goal</div>
+      <div style="font-size:0.9rem;color:var(--white);">${plan.goal}</div>
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:28px;">
+      ${plan.exercises.map(e => `<span style="font-family:var(--font-condensed);font-size:0.65rem;letter-spacing:2px;color:var(--silver);background:var(--steel);padding:6px 16px;text-transform:uppercase;">${e}</span>`).join('')}
+    </div>
+    <button onclick="closeModal()" style="background:var(--gold);color:var(--black);border:none;padding:16px 40px;font-family:var(--font-condensed);font-size:0.8rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;cursor:pointer;width:100%;">START THIS PROGRAM</button>
+  `;
+  document.getElementById('workoutModal').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('workoutModal').classList.remove('active');
+}
+
+document.getElementById('workoutModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+// ── SUBSCRIBE ─────────────────────────────────────────────────────────────────
+async function handleSubscribe() {
+  const email = document.getElementById('ctaEmail').value.trim();
+  const msg = document.getElementById('ctaMessage');
+  if (!email) { msg.textContent = 'Enter your email to begin.'; return; }
+  msg.textContent = 'Joining the elite...';
+  try {
+    const res = await fetch(`${API}/subscribe`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, name: '' })
+    });
+    const data = await res.json();
+    if (data.success) {
+      msg.textContent = data.message;
+      document.getElementById('ctaEmail').value = '';
+    } else {
+      msg.textContent = data.error;
+    }
+  } catch(e) {
+    msg.textContent = '✓ You\'re in. Welcome to the CoreMatrix family.';
+    document.getElementById('ctaEmail').value = '';
+  }
+}
+
+// Enter key submit
+document.getElementById('ctaEmail').addEventListener('keydown', e => {
+  if (e.key === 'Enter') handleSubscribe();
+});
+</script>
+</body>
+</html>
