@@ -3,7 +3,7 @@ CoreMatrix — Luxury Fitness Brand Website
 
 CoreMatrix is a futuristic Gym & Fitness Brand Website designed with a luxury sports aesthetic and immersive user experience. The project combines cinematic visuals, modern animations, and premium UI design to create a high-performance digital fitness platform.
 
-Features
+Features-
 Cinematic hero section with futuristic motion effects
 Smooth reel-style scrolling experience
 Interactive workout plans and fitness programs
@@ -24,13 +24,13 @@ Project Goal
 
 The purpose of CoreMatrix is to explore premium frontend development, immersive UI/UX experiences, and futuristic fitness branding while building a portfolio-grade web application.
 
-Highlights
+Highlights-
 Luxury fitness brand interface
 Modern sports-inspired visuals
 Smooth animations and cinematic transitions
 Interactive and engaging user experience
 Clean scalable frontend structure
-Future Enhancements
+Future Enhancements-
 AI-powered workout recommendations
 Personalized fitness dashboard
 Authentication and user profiles
